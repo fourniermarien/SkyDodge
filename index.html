@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SkyDodge — Defy the Sky</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --sky-deep:#0b1628;
+  --sky-mid:#162a4a;
+  --sky-light:#2d5a8e;
+  --sky-bright:#4a9eed;
+  --cloud:#e8f0fa;
+  --white:#f4f7fb;
+  --accent:#f59e42;
+  --accent-hot:#ff6b35;
+  --text-dim:rgba(244,247,251,.45);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Outfit',sans-serif;
+  background:var(--sky-deep);
+  color:var(--white);
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+/* --- Animated sky gradient bg --- */
+.sky-bg{
+  position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 120% 80% at 30% 20%, #1a3a6e 0%, transparent 60%),
+    radial-gradient(ellipse 100% 60% at 80% 70%, #0e2240 0%, transparent 50%),
+    linear-gradient(175deg, #0b1628 0%, #162a4a 40%, #1a3a6e 70%, #0b1628 100%);
+}
+
+/* Stars */
+.stars{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.star{
+  position:absolute;
+  width:2px;height:2px;
+  background:var(--white);
+  border-radius:50%;
+  animation:twinkle 3s ease-in-out infinite alternate;
+}
+@keyframes twinkle{0%{opacity:.15}100%{opacity:.8}}
+
+/* Clouds */
+.clouds{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.cloud{
+  position:absolute;
+  background:rgba(232,240,250,.04);
+  border-radius:50%;
+  filter:blur(40px);
+  animation:drift linear infinite;
+}
+@keyframes drift{0%{transform:translateX(-120%)}100%{transform:translateX(120vw)}}
+
+/* Content */
+.content{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column}
+
+/* Nav */
+nav{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1.5rem 3rem;
+  opacity:0;animation:fadeDown .8s .2s forwards;
+}
+nav .logo{
+  font-family:'Space Mono',monospace;
+  font-weight:700;font-size:1.1rem;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:var(--sky-bright);
+}
+nav .nav-links{display:flex;gap:2rem;list-style:none}
+nav .nav-links a{
+  color:var(--text-dim);text-decoration:none;
+  font-size:.85rem;font-weight:500;letter-spacing:.05em;text-transform:uppercase;
+  transition:color .3s;
+}
+nav .nav-links a:hover{color:var(--white)}
+
+/* Hero */
+.hero{
+  flex:1;display:flex;flex-direction:column;
+  justify-content:center;align-items:flex-start;
+  padding:4rem 3rem 6rem;
+  max-width:900px;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(74,158,237,.1);
+  border:1px solid rgba(74,158,237,.2);
+  border-radius:100px;padding:.35rem 1rem;
+  font-size:.75rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--sky-bright);
+  opacity:0;animation:fadeUp .7s .4s forwards;
+}
+.hero-badge::before{
+  content:'';display:block;width:6px;height:6px;
+  background:var(--accent);border-radius:50%;
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+
+.hero h1{
+  font-size:clamp(3rem,8vw,6.5rem);
+  font-weight:900;
+  line-height:.92;
+  margin:1.5rem 0 1rem;
+  letter-spacing:-.03em;
+  opacity:0;animation:fadeUp .8s .55s forwards;
+}
+.hero h1 .accent{
+  background:linear-gradient(135deg,var(--accent),var(--accent-hot));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero p{
+  font-size:1.15rem;line-height:1.7;
+  color:var(--text-dim);
+  max-width:480px;
+  margin-bottom:2.5rem;
+  opacity:0;animation:fadeUp .8s .7s forwards;
+}
+.hero-actions{
+  display:flex;gap:1rem;flex-wrap:wrap;
+  opacity:0;animation:fadeUp .8s .85s forwards;
+}
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.85rem 2rem;border-radius:12px;
+  font-family:'Outfit',sans-serif;font-weight:600;font-size:.9rem;
+  text-decoration:none;cursor:pointer;border:none;
+  transition:transform .25s,box-shadow .25s;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent-hot));
+  color:var(--sky-deep);
+  box-shadow:0 4px 24px rgba(245,158,66,.25);
+}
+.btn-primary:hover{box-shadow:0 8px 32px rgba(245,158,66,.35)}
+.btn-ghost{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  color:var(--white);
+}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+
+/* Plane illustration */
+.plane-container{
+  position:fixed;
+  right:5%;top:50%;
+  transform:translateY(-50%);
+  z-index:5;
+  pointer-events:none;
+  opacity:0;animation:fadeIn 1.2s 1s forwards;
+}
+.plane{
+  width:clamp(120px,18vw,260px);
+  animation:float 4s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-18px) rotate(1deg)}}
+
+/* Obstacles */
+.obstacle{
+  position:fixed;z-index:4;pointer-events:none;
+  opacity:0;animation:fadeIn 1s 1.4s forwards;
+}
+.obstacle svg{animation:bob 3s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.obs-1{right:18%;top:22%}
+.obs-2{right:8%;top:65%}
+.obs-3{right:28%;bottom:18%}
+
+/* Footer */
+footer{
+  padding:2rem 3rem;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;
+  border-top:1px solid rgba(255,255,255,.05);
+  opacity:0;animation:fadeUp .8s 1s forwards;
+}
+footer span{font-size:.8rem;color:var(--text-dim)}
+footer a{color:var(--sky-bright);text-decoration:none;font-size:.8rem;transition:color .3s}
+footer a:hover{color:var(--white)}
+
+/* Animations */
+@keyframes fadeUp{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes fadeDown{0%{opacity:0;transform:translateY(-12px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{0%{opacity:0}100%{opacity:1}}
+
+/* Mobile */
+@media(max-width:768px){
+  nav{padding:1.2rem 1.5rem}
+  .hero{padding:3rem 1.5rem 4rem}
+  .plane-container{display:none}
+  .obstacle{display:none}
+  footer{padding:1.5rem;flex-direction:column;text-align:center}
+  nav .nav-links{gap:1.2rem}
+}
+</style>
+</head>
+<body>
+
+<div class="sky-bg"></div>
+<div class="stars" id="stars"></div>
+<div class="clouds">
+  <div class="cloud" style="width:300px;height:80px;top:15%;left:-10%;animation-duration:38s;animation-delay:0s"></div>
+  <div class="cloud" style="width:400px;height:100px;top:45%;left:-15%;animation-duration:52s;animation-delay:8s"></div>
+  <div class="cloud" style="width:250px;height:60px;top:72%;left:-8%;animation-duration:44s;animation-delay:16s"></div>
+</div>
+
+<!-- Plane -->
+<div class="plane-container">
+  <svg class="plane" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g opacity=".9">
+      <!-- Fuselage -->
+      <ellipse cx="100" cy="80" rx="72" ry="18" fill="url(#fuselage)"/>
+      <!-- Wing -->
+      <path d="M70 80 L45 55 Q42 52 46 52 L120 52 Q124 52 122 55 L105 80Z" fill="url(#wing)" opacity=".85"/>
+      <path d="M70 80 L50 105 Q47 108 50 108 L115 108 Q119 108 117 105 L100 80Z" fill="url(#wing)" opacity=".7"/>
+      <!-- Tail -->
+      <path d="M28 80 L18 60 Q16 56 20 58 L35 70Z" fill="var(--sky-bright)" opacity=".6"/>
+      <path d="M28 80 L20 95 Q18 99 22 97 L35 88Z" fill="var(--sky-bright)" opacity=".5"/>
+      <!-- Cockpit -->
+      <ellipse cx="155" cy="78" rx="14" ry="10" fill="url(#cockpit)"/>
+      <!-- Engine glow -->
+      <circle cx="22" cy="80" r="6" fill="var(--accent)" opacity=".7">
+        <animate attributeName="opacity" values=".7;.3;.7" dur="1.5s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="22" cy="80" r="12" fill="var(--accent)" opacity=".15">
+        <animate attributeName="r" values="12;18;12" dur="1.5s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+    <defs>
+      <linearGradient id="fuselage" x1="28" y1="70" x2="172" y2="90">
+        <stop offset="0%" stop-color="#3a7fd5"/>
+        <stop offset="100%" stop-color="#e8f0fa"/>
+      </linearGradient>
+      <linearGradient id="wing" x1="45" y1="52" x2="120" y2="52">
+        <stop offset="0%" stop-color="#4a9eed"/>
+        <stop offset="100%" stop-color="#2d5a8e"/>
+      </linearGradient>
+      <linearGradient id="cockpit" x1="141" y1="70" x2="169" y2="86">
+        <stop offset="0%" stop-color="#f59e42"/>
+        <stop offset="100%" stop-color="#ff6b35"/>
+      </linearGradient>
+    </defs>
+  </svg>
+</div>
+
+<!-- Obstacles -->
+<div class="obstacle obs-1">
+  <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="6" y="6" width="24" height="24" rx="4" stroke="var(--accent-hot)" stroke-width="2" opacity=".35"/></svg>
+</div>
+<div class="obstacle obs-2">
+  <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="animation-delay:1s"><polygon points="14,2 26,26 2,26" stroke="var(--accent)" stroke-width="2" fill="none" opacity=".3"/></svg>
+</div>
+<div class="obstacle obs-3">
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style="animation-delay:2s"><circle cx="16" cy="16" r="12" stroke="var(--sky-bright)" stroke-width="2" opacity=".25"/></svg>
+</div>
+
+<div class="content">
+  <nav>
+    <div class="logo">SkyDodge</div>
+    <ul class="nav-links">
+      <li><a href="/privacy-policy">Privacy</a></li>
+      <li><a href="/app-ads.txt">App-Ads</a></li>
+    </ul>
+  </nav>
+
+  <main class="hero">
+    <div class="hero-badge">Available on the App Store</div>
+    <h1>Dodge.<br>Climb.<br><span class="accent">Survive.</span></h1>
+    <p>Navigate through an endless sky of obstacles. Collect coins, unlock skins, and compete on leaderboards. How far can you fly?</p>
+    <div class="hero-actions">
+      <a href="https://apps.apple.com" class="btn btn-primary" target="_blank" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><path d="M13.91 9.53c-.02-2.17 1.77-3.22 1.85-3.27-1.01-1.48-2.58-1.68-3.14-1.7-1.33-.14-2.61.79-3.28.79-.68 0-1.73-.77-2.84-.75-1.46.02-2.81.85-3.56 2.16-1.52 2.64-.39 6.55 1.09 8.7.73 1.05 1.59 2.23 2.72 2.19 1.09-.04 1.51-.71 2.83-.71 1.32 0 1.7.71 2.84.69 1.18-.02 1.92-1.07 2.63-2.13.83-1.22 1.17-2.4 1.19-2.46-.03-.01-2.29-.88-2.31-3.49l-.02-.02zM11.77 3.3c.6-.73 1.01-1.74.9-2.75-.87.04-1.92.58-2.55 1.3-.56.65-1.05 1.69-.92 2.68.97.08 1.97-.49 2.57-1.23z"/></svg>
+        App Store
+      </a>
+      <a href="/privacy-policy" class="btn btn-ghost">Privacy Policy</a>
+    </div>
+  </main>
+
+  <footer>
+    <span>&copy; 2026 SkyDodge</span>
+    <a href="mailto:marienfournier11@icloud.com">Contact</a>
+  </footer>
+</div>
+
+<script>
+// Generate stars
+const sc=document.getElementById('stars');
+for(let i=0;i<80;i++){
+  const s=document.createElement('div');
+  s.className='star';
+  s.style.left=Math.random()*100+'%';
+  s.style.top=Math.random()*100+'%';
+  s.style.width=s.style.height=(Math.random()*2+1)+'px';
+  s.style.animationDelay=Math.random()*4+'s';
+  s.style.animationDuration=(Math.random()*3+2)+'s';
+  sc.appendChild(s);
+}
+</script>
+</body>
+</html>
